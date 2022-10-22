@@ -200,7 +200,7 @@ function App() {
     <SkillsContext.Provider value={{ design: 0, coding: 0, social: 0 }}>
       <div className="App">
         <pre>{JSON.stringify(skills)}</pre>
-        <div className="card"></div>
+        <div className="card">
           <div>
             <DesignSelector onChange={setDesign} />
           </div>
