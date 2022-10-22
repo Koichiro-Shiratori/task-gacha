@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "oderwat.indent-rainbow",
+    "ms-ceintl.vscode-language-pack-ja",
+    "ms-vsliveshare.vsliveshare",
+    "esbenp.prettier-vscode",
+    "mosapride.zenkaku",
+    "streetsidesoftware.code-spell-checker",
+    "usernamehw.errorlens",
+    "wraith13.bracket-lens",
+    "vscode-icons-team.vscode-icons",
+    "visualstudioexptteam.vscodeintellicode",
+    "VisualStudioExptTeam.intellicode-api-usage-examples"
+  ]
+}
