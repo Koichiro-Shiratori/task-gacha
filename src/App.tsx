@@ -1,4 +1,5 @@
 import { createContext, useCallback, useEffect, useState } from "react";
+import useSWR from 'swr';
 import reactLogo from "./assets/react.svg";
 import "./App.css";
 
@@ -125,6 +126,10 @@ const Button: React.FC<{ skills: any }> = ({ skills }) => {
   // useState hookでtask, setTaskを初期化
   // https://ja.reactjs.org/docs/hooks-state.html
   const [task, setTask] = useState<Task | undefined>(undefined);
+  const [newTasks, setNewTasks] = useState();
+
+  const { data } = useSWR('https://api.github.com/repos/Koichiro-Shiratori/task-gacha/issues');
+  console.log(data);
 
   // buttonをクリックしたら呼び出されるコールバック関数
   const onClick = () => {
