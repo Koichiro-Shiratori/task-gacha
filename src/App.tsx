@@ -3,6 +3,8 @@ import useSWR from 'swr';
 import reactLogo from "./assets/react.svg";
 import "./App.css";
 
+const fetcher = (url:string) => fetch(url).then(r => r.json());
+
 const rarities = ["ノーマル", "レア", "スーパーレア", "スーパースペシャルレア"];
 
 type Task = {
@@ -128,7 +130,7 @@ const Button: React.FC<{ skills: any }> = ({ skills }) => {
   const [task, setTask] = useState<Task | undefined>(undefined);
   const [newTasks, setNewTasks] = useState();
 
-  const { data } = useSWR('https://api.github.com/repos/Koichiro-Shiratori/task-gacha/issues');
+  const { data } = useSWR('https://api.github.com/repos/Koichiro-Shiratori/task-gacha/issues', fetcher);
   console.log(data);
 
   // buttonをクリックしたら呼び出されるコールバック関数
