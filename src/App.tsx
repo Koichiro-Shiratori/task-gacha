@@ -1,82 +1,19 @@
 import { createContext, useCallback, useEffect, useState } from "react";
 import useSWR from "swr";
 import "./App.css";
+import {
+  CodingSelector,
+  DesignSelector,
+  SocialSelector,
+} from "./components/selector";
+import { TaskView } from "./components/task";
+import { Task } from "./types/task";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 const skillLevels = ["初心者", "中級者", "上級者"];
 
 export const SkillsContext = createContext({ design: 0, coding: 0, social: 0 });
-
-const AbstractSelector: React.FC<{
-  skillName: string;
-  onChange: (value: number) => void;
-}> = ({ skillName, onChange }) => {
-  const [value, setValue] = useState(0);
-
-  useEffect(() => {
-    onChange(value);
-  }, [value]);
-
-  return (
-    <>
-      <strong>{skillName}</strong>
-      {" : "}
-      <select
-        value={value}
-        onChange={(e) => setValue(parseInt(e.target.value))}
-      >
-        <option value={0}>初心者</option>
-        <option value={1}>中級者</option>
-        <option value={2}>上級者</option>
-      </select>
-    </>
-  );
-};
-
-const DesignSelector: React.FC<{ onChange: (value: number) => void }> = ({
-  onChange,
-}) => {
-  return <AbstractSelector skillName="デザイン力" onChange={onChange} />;
-};
-
-const CodingSelector: React.FC<{ onChange: (value: number) => void }> = ({
-  onChange,
-}) => {
-  return <AbstractSelector skillName="コーディング力" onChange={onChange} />;
-};
-
-const SocialSelector: React.FC<{ onChange: (value: number) => void }> = ({
-  onChange,
-}) => {
-  return <AbstractSelector skillName="課題発見力" onChange={onChange} />;
-};
-
-type User = {
-  login: string;
-  id: number;
-  avatar_url: string;
-  url: string;
-};
-
-type Task = {
-  url: string;
-  created_at: string;
-  updated_at: string;
-  closed_at: string | null;
-  title: string;
-  state: string;
-  assignee: User | null;
-  assignees: User[] | [];
-  user: User;
-  labels: [
-    {
-      id: number;
-      name: string;
-      color: string;
-    }
-  ];
-};
 
 // Buttonという名前のReactのFunctional Componentを作成
 const Button: React.FC<{ skills: any }> = ({ skills }) => {
@@ -134,20 +71,7 @@ const Button: React.FC<{ skills: any }> = ({ skills }) => {
       <button type="button" onClick={onClick}>
         ガチャを引く
       </button>
-      {task ? (
-        <>
-          <h2>{task.title}</h2>
-          <div>
-            <ul>
-              {task.labels.map((label) => (
-                <li key={label.name}>{label.name}</li>
-              ))}
-            </ul>
-          </div>
-        </>
-      ) : (
-        <h2>タスクがありません</h2>
-      )}
+      <TaskView task={task} />
     </>
   );
 };
