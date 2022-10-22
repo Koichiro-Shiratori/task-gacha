@@ -124,12 +124,12 @@ const Button: React.FC<{ skills: any }> = ({ skills }) => {
     // raritiesのなかからランダムに一つ取り出す
     const rarity = rarities[Math.floor(Math.random() * rarities.length)];
     // tasksの中からrarityにマッチするものだけを取り出す
-    const newTasks = data?.filter((t) => {
+    const newTasks = data?.filter((_task) => {
       return (
-        t.labels.filter((label) => (label.name === 'レア度: '+rarity)).length > 0 &&
-        t.labels.filter((label) => (label.name === 'デザイン力: '+ (['初心者', '中級者', '上級者'][skills.design]))).length > 0 &&
-        t.labels.filter((label) => (label.name === 'コーディング力: '+ (['初心者', '中級者', '上級者'][skills.design]))).length > 0 &&
-        t.labels.filter((label) => (label.name === '課題発見力: '+ (['初心者', '中級者', '上級者'][skills.design]))).length > 0
+        _task.labels.filter((label) => (label.name === 'レア度: '+rarity)).length > 0 &&
+        _task.labels.filter((label) => (label.name === 'デザイン力: '+ (['初心者', '中級者', '上級者'][skills.design]))).length > 0 &&
+        _task.labels.filter((label) => (label.name === 'コーディング力: '+ (['初心者', '中級者', '上級者'][skills.coding]))).length > 0 &&
+        _task.labels.filter((label) => (label.name === '課題発見力: '+ (['初心者', '中級者', '上級者'][skills.social]))).length > 0
       );
     });
     // newTasksのなかからランダムに一つ取り出してtaskという変数にsetする
