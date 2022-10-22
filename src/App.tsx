@@ -7,48 +7,6 @@ const fetcher = (url:string) => fetch(url).then(r => r.json());
 
 const rarities = ["ノーマル", "レア", "スーパーレア", "スーパースペシャルレア"];
 
-type Task = {
-  rarity: string;
-  task: string;
-  skills: {
-    design: number;
-    coding: number;
-    social: number;
-  };
-};
-const tasks: Task[] = [
-  {
-    rarity: "ノーマル",
-    task: "バグを発見する",
-    skills: { design: 0, coding: 0, social: 0 },
-  },
-  {
-    rarity: "レア",
-    task: "バグを修正する",
-    skills: { design: 0, coding: 1, social: 0 },
-  },
-  {
-    rarity: "スーパーレア",
-    task: "新機能を提案する",
-    skills: { design: 1, coding: 1, social: 5 },
-  },
-  {
-    rarity: "スーパーレア",
-    task: "新機能を実装する",
-    skills: { design: 0, coding: 3, social: 0 },
-  },
-  {
-    rarity: "スーパーレア",
-    task: "デザインを磨き上げる",
-    skills: { design: 5, coding: 1, social: 0 },
-  },
-  {
-    rarity: "スーパースペシャルレア",
-    task: "タスクを追加できるようにする",
-    skills: { design: 0, coding: 3, social: 0 },
-  },
-];
-
 export const SkillsContext = createContext({ design: 0, coding: 0, social: 0 });
 
 const DesignSelector: React.FC<{ onChange: (value: number) => void }> = ({
@@ -123,26 +81,55 @@ const SocialSelector: React.FC<{ onChange: (value: number) => void }> = ({
   );
 };
 
+type User = {
+  login: string;
+  id: number;
+  avatar_url: string;
+  url: string;
+}
+
+type Task = {
+  url: string;
+  created_at: string;
+  updated_at: string;
+  closed_at: string | null;
+  title: string;
+  state: string,
+  assignee: User | null;
+  assignees: User[] | [];
+  user: User;
+  labels: [
+    {
+      id: number;
+      name: string;
+      color: string;
+    }
+  ];
+}
+
 // Buttonという名前のReactのFunctional Componentを作成
 const Button: React.FC<{ skills: any }> = ({ skills }) => {
   // useState hookでtask, setTaskを初期化
   // https://ja.reactjs.org/docs/hooks-state.html
   const [task, setTask] = useState<Task | undefined>(undefined);
-  const [newTasks, setNewTasks] = useState();
 
-  const { data } = useSWR('https://api.github.com/repos/Koichiro-Shiratori/task-gacha/issues', fetcher);
+  const { data } = useSWR<Task[]>('https://api.github.com/repos/Koichiro-Shiratori/task-gacha/issues', fetcher);
   console.log(data);
 
   // buttonをクリックしたら呼び出されるコールバック関数
   const onClick = () => {
+    if (!data) {
+      return;
+    }
     // raritiesのなかからランダムに一つ取り出す
     const rarity = rarities[Math.floor(Math.random() * rarities.length)];
     // tasksの中からrarityにマッチするものだけを取り出す
-    const newTasks = tasks.filter((t) => {
+    const newTasks = data?.filter((t) => {
       return (
-        t.rarity === rarity &&
-        t.skills.design <= skills.design &&
-        t.skills.coding <= skills.coding
+        t.labels.filter((label) => (label.name === 'レア度: '+rarity)).length > 0 &&
+        t.labels.filter((label) => (label.name === 'デザイン力: '+ (['初心者', '中級者', '上級者'][skills.design]))).length > 0 &&
+        t.labels.filter((label) => (label.name === 'コーディング力: '+ (['初心者', '中級者', '上級者'][skills.design]))).length > 0 &&
+        t.labels.filter((label) => (label.name === '課題発見力: '+ (['初心者', '中級者', '上級者'][skills.design]))).length > 0
       );
     });
     // newTasksのなかからランダムに一つ取り出してtaskという変数にsetする
@@ -156,9 +143,18 @@ const Button: React.FC<{ skills: any }> = ({ skills }) => {
         ガチャを引く
       </button>
       {task ? (
-        <h2>
-          {task.rarity} : {task.task}
-        </h2>
+        <>
+          <h2>
+            {task.title}
+          </h2>
+          <div>
+            <ul>
+              {task.labels.map((label) => (
+                <li>{label.name}</li>
+              ))}
+            </ul>
+          </div>
+        </>
       ) : (
         <h2>タスクがありません</h2>
       )}
@@ -204,7 +200,7 @@ function App() {
     <SkillsContext.Provider value={{ design: 0, coding: 0, social: 0 }}>
       <div className="App">
         <pre>{JSON.stringify(skills)}</pre>
-        <div className="card">
+        <div className="card"></div>
           <div>
             <DesignSelector onChange={setDesign} />
           </div>
