@@ -1,17 +1,18 @@
 import { createContext, useCallback, useEffect, useState } from "react";
-import useSWR from 'swr';
-import reactLogo from "./assets/react.svg";
+import useSWR from "swr";
 import "./App.css";
 
-const fetcher = (url:string) => fetch(url).then(r => r.json());
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 const rarities = ["ノーマル", "レア", "スーパーレア", "スーパースペシャルレア"];
+const skillLevels = ["初心者", "中級者", "上級者"];
 
 export const SkillsContext = createContext({ design: 0, coding: 0, social: 0 });
 
-const DesignSelector: React.FC<{ onChange: (value: number) => void }> = ({
-  onChange,
-}) => {
+const AbstractSelector: React.FC<{
+  skillName: string;
+  onChange: (value: number) => void;
+}> = ({ skillName, onChange }) => {
   const [value, setValue] = useState(0);
 
   useEffect(() => {
@@ -20,7 +21,7 @@ const DesignSelector: React.FC<{ onChange: (value: number) => void }> = ({
 
   return (
     <>
-      <strong>デザイン力</strong>
+      <strong>{skillName}</strong>
       {" : "}
       <select
         value={value}
@@ -32,53 +33,24 @@ const DesignSelector: React.FC<{ onChange: (value: number) => void }> = ({
       </select>
     </>
   );
+};
+
+const DesignSelector: React.FC<{ onChange: (value: number) => void }> = ({
+  onChange,
+}) => {
+  return <AbstractSelector skillName="デザイン力" onChange={onChange} />;
 };
 
 const CodingSelector: React.FC<{ onChange: (value: number) => void }> = ({
   onChange,
 }) => {
-  const [value, setValue] = useState(0);
-
-  useEffect(() => {
-    onChange(value);
-  }, [value]);
-  return (
-    <>
-      <strong>コーディング力</strong>
-      {" : "}
-      <select
-        value={value}
-        onChange={(e) => setValue(parseInt(e.target.value))}
-      >
-        <option value={0}>初心者</option>
-        <option value={1}>中級者</option>
-        <option value={2}>上級者</option>
-      </select>
-    </>
-  );
+  return <AbstractSelector skillName="コーディング力" onChange={onChange} />;
 };
+
 const SocialSelector: React.FC<{ onChange: (value: number) => void }> = ({
   onChange,
 }) => {
-  const [value, setValue] = useState(0);
-
-  useEffect(() => {
-    onChange(value);
-  }, [value]);
-  return (
-    <>
-      <strong>課題発見力</strong>
-      {" : "}
-      <select
-        value={value}
-        onChange={(e) => setValue(parseInt(e.target.value))}
-      >
-        <option value={0}>初心者</option>
-        <option value={1}>中級者</option>
-        <option value={2}>上級者</option>
-      </select>
-    </>
-  );
+  return <AbstractSelector skillName="課題発見力" onChange={onChange} />;
 };
 
 type User = {
@@ -86,7 +58,7 @@ type User = {
   id: number;
   avatar_url: string;
   url: string;
-}
+};
 
 type Task = {
   url: string;
@@ -94,7 +66,7 @@ type Task = {
   updated_at: string;
   closed_at: string | null;
   title: string;
-  state: string,
+  state: string;
   assignee: User | null;
   assignees: User[] | [];
   user: User;
@@ -105,7 +77,7 @@ type Task = {
       color: string;
     }
   ];
-}
+};
 
 // Buttonという名前のReactのFunctional Componentを作成
 const Button: React.FC<{ skills: any }> = ({ skills }) => {
@@ -113,8 +85,10 @@ const Button: React.FC<{ skills: any }> = ({ skills }) => {
   // https://ja.reactjs.org/docs/hooks-state.html
   const [task, setTask] = useState<Task | undefined>(undefined);
 
-  const { data } = useSWR<Task[]>('https://api.github.com/repos/Koichiro-Shiratori/task-gacha/issues', fetcher);
-  console.log(data);
+  const { data } = useSWR<Task[]>(
+    "https://api.github.com/repos/Koichiro-Shiratori/task-gacha/issues",
+    fetcher
+  );
 
   // buttonをクリックしたら呼び出されるコールバック関数
   const onClick = () => {
@@ -123,15 +97,37 @@ const Button: React.FC<{ skills: any }> = ({ skills }) => {
     }
     // raritiesのなかからランダムに一つ取り出す
     const rarity = rarities[Math.floor(Math.random() * rarities.length)];
+
+    // 各スキルごとに対応可能なレベル
+    const designLevels = skillLevels
+      .slice(0, skills.design + 1)
+      .map((level) => "デザイン力: " + level);
+    console.log(designLevels);
+    const codingLevels = skillLevels
+      .slice(0, skills.coding + 1)
+      .map((level) => "コーディング力: " + level);
+    console.log(codingLevels);
+    const socialLevels = skillLevels
+      .slice(0, skills.social + 1)
+      .map((level) => "課題発見力: " + level);
+    console.log(socialLevels);
+
     // tasksの中からrarityにマッチするものだけを取り出す
     const newTasks = data?.filter((_task) => {
+      const labelNames = _task.labels.flatMap((label) => label.name);
       return (
-        _task.labels.filter((label) => (label.name === 'レア度: '+rarity)).length > 0 &&
-        _task.labels.filter((label) => (label.name === 'デザイン力: '+ (['初心者', '中級者', '上級者'][skills.design]))).length > 0 &&
-        _task.labels.filter((label) => (label.name === 'コーディング力: '+ (['初心者', '中級者', '上級者'][skills.coding]))).length > 0 &&
-        _task.labels.filter((label) => (label.name === '課題発見力: '+ (['初心者', '中級者', '上級者'][skills.social]))).length > 0
+        labelNames.includes("レア度: " + rarity) &&
+        designLevels
+          .map((level) => labelNames.includes(level))
+          .includes(true) &&
+        codingLevels
+          .map((level) => labelNames.includes(level))
+          .includes(true) &&
+        socialLevels.map((level) => labelNames.includes(level)).includes(true)
       );
     });
+    // 取り出されたタスク
+    console.log(newTasks.map((_task) => _task.title));
     // newTasksのなかからランダムに一つ取り出してtaskという変数にsetする
     const newTask = newTasks[Math.floor(Math.random() * newTasks.length)];
     setTask(newTask);
@@ -144,13 +140,11 @@ const Button: React.FC<{ skills: any }> = ({ skills }) => {
       </button>
       {task ? (
         <>
-          <h2>
-            {task.title}
-          </h2>
+          <h2>{task.title}</h2>
           <div>
             <ul>
               {task.labels.map((label) => (
-                <li>{label.name}</li>
+                <li key={label.name}>{label.name}</li>
               ))}
             </ul>
           </div>

@@ -10,6 +10,7 @@
     "wraith13.bracket-lens",
     "vscode-icons-team.vscode-icons",
     "visualstudioexptteam.vscodeintellicode",
-    "VisualStudioExptTeam.intellicode-api-usage-examples"
+    "visualstudioexptteam.intellicode-api-usage-examples",
+    "QDL.default-formatter"
   ]
 }
