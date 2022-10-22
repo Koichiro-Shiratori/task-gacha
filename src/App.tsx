@@ -1,6 +1,5 @@
 import { createContext, useCallback, useEffect, useState } from "react";
 import useSWR from "swr";
-import "./App.css";
 import {
   CodingSelector,
   DesignSelector,
@@ -68,7 +67,16 @@ const Button: React.FC<{ skills: any }> = ({ skills }) => {
 
   return (
     <>
-      <button type="button" onClick={onClick}>
+      <button
+        type="button"
+        onClick={onClick}
+        style={{
+          fontSize: "24px",
+          border: "1px solid black",
+          borderRadius: "4px",
+          padding: "4px"
+        }}
+      >
         ガチャを引く
       </button>
       <TaskView task={task} />
@@ -112,9 +120,14 @@ function App() {
 
   return (
     <SkillsContext.Provider value={{ design: 0, coding: 0, social: 0 }}>
-      <div className="App">
-        <pre>{JSON.stringify(skills)}</pre>
-        <div className="card">
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <div style={{ fontSize: "18px" }}>
           <div>
             <DesignSelector onChange={setDesign} />
           </div>
@@ -124,7 +137,15 @@ function App() {
           <div>
             <SocialSelector onChange={setSocial} />
           </div>
-          <br />
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            margin: "20px 0",
+          }}
+        >
           <Button skills={skills} />
         </div>
       </div>
