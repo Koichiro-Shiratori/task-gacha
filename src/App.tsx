@@ -4,7 +4,6 @@ import "./App.css";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
-const rarities = ["ノーマル", "レア", "スーパーレア", "スーパースペシャルレア"];
 const skillLevels = ["初心者", "中級者", "上級者"];
 
 export const SkillsContext = createContext({ design: 0, coding: 0, social: 0 });
@@ -95,9 +94,6 @@ const Button: React.FC<{ skills: any }> = ({ skills }) => {
     if (!data) {
       return;
     }
-    // raritiesのなかからランダムに一つ取り出す
-    const rarity = rarities[Math.floor(Math.random() * rarities.length)];
-
     // 各スキルごとに対応可能なレベル
     const designLevels = skillLevels
       .slice(0, skills.design + 1)
@@ -112,11 +108,10 @@ const Button: React.FC<{ skills: any }> = ({ skills }) => {
       .map((level) => "課題発見力: " + level);
     console.log(socialLevels);
 
-    // tasksの中からrarityにマッチするものだけを取り出す
+    // tasksの中からスキルにマッチするものだけを取り出す
     const newTasks = data?.filter((_task) => {
       const labelNames = _task.labels.flatMap((label) => label.name);
       return (
-        labelNames.includes("レア度: " + rarity) &&
         designLevels
           .map((level) => labelNames.includes(level))
           .includes(true) &&
@@ -126,6 +121,7 @@ const Button: React.FC<{ skills: any }> = ({ skills }) => {
         socialLevels.map((level) => labelNames.includes(level)).includes(true)
       );
     });
+
     // 取り出されたタスク
     console.log(newTasks.map((_task) => _task.title));
     // newTasksのなかからランダムに一つ取り出してtaskという変数にsetする
