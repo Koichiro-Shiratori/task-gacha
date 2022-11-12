@@ -1,5 +1,6 @@
 import { createContext, useCallback, useEffect, useState } from "react";
 import useSWR from "swr";
+import GitHubButton from 'react-github-btn'
 import {
   CodingSelector,
   DesignSelector,
@@ -127,6 +128,8 @@ function App() {
           alignItems: "center",
         }}
       >
+      
+<GitHubButton href="https://github.com/Koichiro-Shiratori/task-gacha/issues" data-size="large" data-show-count="true" aria-label="Issue Koichiro-Shiratori/task-gacha on GitHub">Issue</GitHubButton>
         <div style={{ fontSize: "18px" }}>
           <div>
             <DesignSelector onChange={setDesign} />
