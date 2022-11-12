@@ -5,7 +5,11 @@ export const TaskView: React.FC<{ task?: Task }> = ({ task }) => {
     <>
       {task ? (
         <>
-          <h2>{task.title}</h2>
+          <h2>
+            <a href={task.html_url} target="_blank">
+              {task.title}
+            </a>
+          </h2>
           <div>
             <ul>
               {task.labels.map((label) => (

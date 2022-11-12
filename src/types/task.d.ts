@@ -1,5 +1,6 @@
 export type Task = {
   url: string;
+  html_url: string;
   created_at: string;
   updated_at: string;
   closed_at: string | null;
