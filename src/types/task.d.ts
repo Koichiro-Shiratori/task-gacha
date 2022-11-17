@@ -6,6 +6,7 @@ export type Task = {
   closed_at: string | null;
   title: string;
   state: string;
+  body: string | null;
   assignee: User | null;
   assignees: User[] | [];
   user: User;
