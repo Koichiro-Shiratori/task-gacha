@@ -9,6 +9,7 @@ export const TaskView: React.FC<{ task?: Task }> = ({ task }) => {
             <a href={task.html_url} target="_blank">
               {task.title}
             </a>
+            <p>{task.body}</p>
           </h2>
           <div>
             <ul>
